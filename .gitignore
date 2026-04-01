@@ -1,1 +1,40 @@
+# R session files
+.Rhistory
+.Rprofile
+.RData
+.Renviron
 
+# R package build artifacts
+*.tar.gz
+*.Rcheck/
+
+# Rcpp compilation artifacts
+*.o
+*.so
+*.dll
+
+# BACI data (large, not for version control)
+BACI_*/
+*.dta
+
+# Estimation outputs (regenerable)
+*_step1.rds
+*_step2.rds
+*_checkpoint.rds
+*_summary.rds
+*_summary.txt
+elast_*.rds
+elast_*.csv
+
+# Temp files
+*.tmp
+tmp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.Rproj.user/
+*.Rproj
+.vscode/
