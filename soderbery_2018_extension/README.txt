@@ -8,7 +8,7 @@
  Adapted for CEPII BACI bilateral trade data.
 ================================================================================
 
-Code last updated: 2026-03-31
+Code last updated: 2026-04-01
 
 
 OVERVIEW
