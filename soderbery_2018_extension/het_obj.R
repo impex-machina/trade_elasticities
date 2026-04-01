@@ -8,7 +8,7 @@
 #' Vectorized: all residuals computed via element-wise vector operations
 #' rather than row-by-row for-loops. Mathematically identical output.
 #'
-#' Last updated: 2026-03-27
+#' Last updated: 2026-04-01
 #' ===========================================================================
 
 
