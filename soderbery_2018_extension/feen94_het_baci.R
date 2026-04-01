@@ -507,19 +507,44 @@ cell_failure <- function(reason) {
 #' @return Named list with exp_Y, exp_X, exp_jmap, sig_V, gam_V, wt_exp.
 build_export_moments <- function(exporter_order, focal_importer, all_dt, cfg) {
 
+  # ---------------------------------------------------------------
+  # PURPOSE: Construct the export-side moment conditions (Eq. 11)
+  # for each non-reference exporter j that sells to the focal
+  # importer I. Identification comes from comparing exporter j's
+  # price/share movements in market I against its movements in a
+  # *reference destination* V (the largest alternative market for
+  # exporter j, excluding I). This cross-market variation pins
+  # down the export supply elasticity gamma_j separately from
+  # the demand elasticity sigma.
+  #
+  # RETURNS: A list with export-side Y vector, X matrix, and
+  # metadata (jmap, sig_V, gam_V, weights). If no exporters have
+  # enough cross-market data, returns zero-length structures so
+  # the optimizer falls back to import-side moments only.
+  # ---------------------------------------------------------------
+
   exp_Y_list   <- list()
   exp_X_list   <- list()
-  exp_jmap_vec <- integer(0)
-  sig_V_vec    <- numeric(0)
-  gam_V_vec    <- numeric(0)
+  exp_jmap_vec <- integer(0)   # Maps each export obs to its position in d[]
+  sig_V_vec    <- numeric(0)   # sigma at reference destination V (fixed)
+  gam_V_vec    <- numeric(0)   # gamma at reference destination V (fixed)
 
   for (j_idx in seq_along(exporter_order)) {
     exp_j <- exporter_order[j_idx]
 
+    # --- Check that exporter j sells to enough destinations ---
+    # Eq. 11 requires variation across destinations. If j only
+    # exports to 1 market, there's no reference destination to
+    # difference against.
     exp_flows <- all_dt[exporter == exp_j]
     n_dest <- uniqueN(exp_flows$importer)
     if (n_dest < cfg$min_destinations) next
 
+    # --- Select reference destination V ---
+    # V is the largest market (by total trade value) for exporter j,
+    # EXCLUDING the focal importer I. This ensures the reference
+    # market is economically significant and avoids using I as its
+    # own reference.
     dest_stats <- exp_flows[importer != focal_importer,
                             .(dest_val = sum(cusval, na.rm = TRUE)),
                             by = importer]
@@ -527,10 +552,19 @@ build_export_moments <- function(exporter_order, focal_importer, all_dt, cfg) {
 
     ref_dest <- dest_stats$importer[which.max(dest_stats$dest_val)]
 
+    # --- Extract reference destination time series ---
+    # These are the first-differenced log prices and log export
+    # shares of exporter j in market V. They enter Eq. 11 as the
+    # "V" variables (D lp_V, D ls_V).
     ref_dest_vals <- exp_flows[importer == ref_dest,
                                .(t, ref_lp_exp = lp_dif,
                                  ref_ls_exp = ls_exp_dif)]
 
+    # --- Merge with focal importer time series ---
+    # Join on time period so each obs has BOTH j's movements in
+    # market I (lp_dif, ls_exp_dif) and j's movements in market V
+    # (ref_lp_exp, ref_ls_exp) for the same year. The LHS of
+    # Eq. 11 is the squared price difference (lp_I - lp_V)^2.
     focal_vals <- exp_flows[importer == focal_importer]
     focal_vals <- ref_dest_vals[focal_vals, on = "t"]
     focal_vals <- focal_vals[!is.na(ref_lp_exp) & !is.na(ref_ls_exp) &
@@ -538,21 +572,31 @@ build_export_moments <- function(exporter_order, focal_importer, all_dt, cfg) {
 
     if (nrow(focal_vals) == 0L) next
 
+    # --- Build moment variables (9 RHS terms for Eq. 11) ---
+    # These are the cross-products of differenced log shares and
+    # prices across the two markets (I and V). Each term corresponds
+    # to a coefficient in the Leamer hyperbola that is a nonlinear
+    # function of sigma, gamma_I (the exporter's supply elasticity
+    # in market I), and gamma_V / sigma_V (the structural defaults
+    # at the reference destination, treated as known).
     focal_vals[, `:=`(
-      exp_y  = (lp_dif - ref_lp_exp)^2,
-      exp_x1 = ls_exp_dif^2,
-      exp_x2 = ls_exp_dif * lp_dif,
-      exp_x3 = ref_ls_exp^2,
-      exp_x4 = ref_ls_exp * lp_dif,
-      exp_x5 = ref_ls_exp * ref_lp_exp,
-      exp_x6 = ls_exp_dif * ref_lp_exp,
-      exp_x7 = ls_exp_dif * ref_ls_exp,
-      exp_x8 = ref_lp_exp^2,
-      exp_x9 = ref_lp_exp * lp_dif
+      exp_y  = (lp_dif - ref_lp_exp)^2,        # LHS: squared price gap I vs V
+      exp_x1 = ls_exp_dif^2,                    # (D ls_I)^2
+      exp_x2 = ls_exp_dif * lp_dif,             # (D ls_I)(D lp_I)
+      exp_x3 = ref_ls_exp^2,                    # (D ls_V)^2
+      exp_x4 = ref_ls_exp * lp_dif,             # (D ls_V)(D lp_I)
+      exp_x5 = ref_ls_exp * ref_lp_exp,         # (D ls_V)(D lp_V)
+      exp_x6 = ls_exp_dif * ref_lp_exp,         # (D ls_I)(D lp_V)
+      exp_x7 = ls_exp_dif * ref_ls_exp,         # (D ls_I)(D ls_V)
+      exp_x8 = ref_lp_exp^2,                    # (D lp_V)^2
+      exp_x9 = ref_lp_exp * lp_dif              # (D lp_V)(D lp_I)
     )]
     focal_vals <- focal_vals[!is.na(exp_y)]
     if (nrow(focal_vals) == 0L) next
 
+    # --- BW-weighted time average ---
+    # Same Broda-Weinstein weighting as import side: down-weights
+    # obs with large period-to-period value swings.
     setorder(focal_vals, t)
     focal_vals[, `:=`(cusval_lag = shift(cusval, 1L), pd_e = .N)]
     focal_vals[, bw_w_e := bw_weight(cusval, cusval_lag, pd_e)]
@@ -564,18 +608,32 @@ build_export_moments <- function(exporter_order, focal_importer, all_dt, cfg) {
       .SDcols = exp_cols
     ]
 
+    # --- Collect into output structures ---
     exp_Y_list[[length(exp_Y_list) + 1L]] <- exp_mom$exp_y
     exp_X_list[[length(exp_X_list) + 1L]] <- as.numeric(
       exp_mom[, .(exp_x1,exp_x2,exp_x3,exp_x4,exp_x5,
                   exp_x6,exp_x7,exp_x8,exp_x9)]
     )
+    # j_idx + 2 maps this exporter to its position in the parameter
+    # vector d[]: d[1]=sigma, d[2]=gamma_k, d[3:]=gamma_j's.
+    # So exporter j_idx in exporter_order corresponds to d[j_idx+2].
     exp_jmap_vec <- c(exp_jmap_vec, j_idx + 2L)
+    # sigma_V and gamma_V at the reference destination are treated
+    # as FIXED KNOWN VALUES in Eq. 11 — they are structural defaults
+    # from config, not estimated. This is where the two-step
+    # calibration matters: Step 1 uses paper defaults, Step 2
+    # replaces them with BACI-specific medians from Step 1.
     sig_V_vec    <- c(sig_V_vec, cfg$sigma_V_default)
     gam_V_vec    <- c(gam_V_vec, cfg$gamma_V_default)
   }
 
   M <- length(exp_Y_list)
 
+  # Return M export-side observations stacked into a single Y
+  # vector and X matrix. If M=0, the objective function receives
+  # zero-length inputs and uses import-side moments only (still
+  # identified for sigma, but gamma_j estimates rely on import-
+  # side variation alone).
   if (M > 0L) {
     list(
       exp_Y  = unlist(exp_Y_list),

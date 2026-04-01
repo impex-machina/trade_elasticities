@@ -100,8 +100,9 @@ het_obj <- function(d, imp_Y, imp_X, exp_Y, exp_X,
                 ((sig - sig_V) / sm1)                                         * exp_X[, 8] +
                 ((sig_V - sig) / sm1)                                         * exp_X[, 9]
 
-    SSR_imp + sum(wt_exp * (exp_Y - pred_exp)^2)
+    SSR_exp <- sum(wt_exp * (exp_Y - pred_exp)^2)
+    return(SSR_imp + SSR_exp)
   } else {
-    SSR_imp
+    return(SSR_imp)
   }
 }
