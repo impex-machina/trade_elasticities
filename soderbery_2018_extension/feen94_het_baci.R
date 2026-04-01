@@ -13,7 +13,7 @@
 #'   Soderbery, Anson, "Trade Elasticities, Heterogeneity, and Optimal
 #'   Tariffs," JIE, 114, 2018, pp. 44-62.
 #'
-#' Last updated: 2026-03-30
+#' Last updated: 2026-04-01
 #' ===========================================================================
 
 library(data.table)
