@@ -13,7 +13,9 @@ Data outputs are hosted on Hugging Face due to file size.
 
 [![Dataset on HF](https://img.shields.io/badge/🤗%20Hugging%20Face-trade__elast__baci__hs92__v202601__hs4-yellow)](https://huggingface.co/datasets/impex-machina/trade_elast_baci_hs92_v202601_hs4)
 
-BACI HS92 v202601 trade elasticity estimates at the HS4 level with fixed sigma, estimated at the country and regional level.
+Three-stage heterogeneous σ and γ estimator adapted for BACI at the country level, HS4, estimated at the country and regional level.
+
+**Computation:** Scripts were run on AWS EC2 (`c7a.16xlarge`, us-east-1, 64 vCPUs, 128GB RAM). Full pipeline runtime is approximately 45 minutes on 62 cores. A 4-core machine is supported via serial fallback but expect 5–8 hours. Replicators will need to supply their own AMI (`[AMI-ID]`) and IAM role (`[IAM-ROLE]`). See the README in this folder for stage-level timing details and checkpoint/resume instructions.
 
 | File | Description | Download |
 |---|---|---|
@@ -37,6 +39,8 @@ df <- readRDS(tmp)
 [![Dataset on HF](https://img.shields.io/badge/🤗%20Hugging%20Face-soderbery__2018__extension-yellow)](https://huggingface.co/datasets/impex-machina/soderbery_2018_extension)
 
 Direct extension of the Soderbery (2018) joint nonlinear SUR estimator to BACI HS92 v202601, at the HS4 level, estimated at the country and regional level.
+
+**Computation:** Scripts were run on AWS EC2 (`c7a.16xlarge`, us-east-1, 64 vCPUs, 128GB RAM). Replicators will need to supply their own AMI (`[AMI-ID]`) and IAM role (`[IAM-ROLE]`). See the README in this folder for runtime details and checkpoint/resume instructions.
 
 | File | Description | Download |
 |---|---|---|
