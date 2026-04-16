@@ -36,7 +36,7 @@ df <- readRDS(tmp)
 
 [![Dataset on HF](https://img.shields.io/badge/🤗%20Hugging%20Face-soderbery__2018__extension-yellow)](https://huggingface.co/datasets/impex-machina/soderbery_2018_extension)
 
-Extension of Soderbery (2018) two-step heterogeneous elasticity estimator to BACI HS92 v202601, at the HS4 level, estimated at the country and regional level.
+Direct extension of the Soderbery (2018) joint nonlinear SUR estimator to BACI HS92 v202601, at the HS4 level, estimated at the country and regional level.
 
 | File | Description | Download |
 |---|---|---|
