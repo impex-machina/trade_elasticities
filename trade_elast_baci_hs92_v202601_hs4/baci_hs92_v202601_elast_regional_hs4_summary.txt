@@ -1,0 +1,92 @@
+========================================================================
+  ESTIMATION SUMMARY REPORT
+  Soderbery (2018) Heterogeneous Elasticity Estimator
+========================================================================
+
+CONFIGURATION
+------------------------------------------------------------------------
+  BACI source:          baci_hs92_v202601
+  Data path:            BACI_HS92_V202601/
+  Scope:                regional
+  Aggregation:          hs4
+  Min year:             1995
+  Max year:             all available
+  Structural defaults:  sigma_V=2.880, gamma_V=0.690
+  Starting values:      sigma=2.880, gamma=0.690
+  Min exporters:        2
+  Min destinations:     2
+  Min periods:          3
+  UV outlier threshold: 2.0
+  Tail trim:            0.5% each tail
+  Timestamp:            2026-04-16 19:08:34
+
+GLOBAL DISTRIBUTIONAL STATISTICS
+------------------------------------------------------------------------
+  Total estimate rows:  439,913
+  Products:             1237
+  Importers:            21
+  Exporters:            21
+  Unique sigma (imp x good): 25,030
+  Unique gamma (imp x exp x good): 439,913
+
+  Sigma (elasticity of substitution):
+    Median=3.961  Mean=82.430  SD=1620.516  IQR=[3.249, 5.063]
+
+  Gamma (inverse export supply elasticity):
+    Median=1.075  Mean=1.652  SD=4.083  MAD=0.504  IQR=[0.651, 1.771]
+
+  Optimal tariff (Proposition 1):
+    Median=1.168  Mean=1.617
+
+PER-IMPORTER SUMMARY (cf. Soderbery Table 2)
+------------------------------------------------------------------------
+  Importer                 Obs   sig_mn   sig_md  sig_MAD   gam_mn   gam_md  gam_MAD
+  -------------------- ------- -------- -------- -------- -------- -------- --------
+  AFR                   24,016    4.082    3.908    0.411    1.761    1.089    0.533
+  ASA                   24,762    4.136    3.950    0.449    1.480    1.013    0.470
+  AUS                   20,015   46.498    3.749    1.131    1.777    1.157    0.557
+  BRA                   19,208   49.816    3.822    1.038    1.680    1.087    0.551
+  CAN                   21,580  113.435    4.427    1.435    1.625    1.052    0.483
+  CAR                   21,555   42.097    3.519    0.456    1.872    1.129    0.595
+  CHN                   23,162  206.096    4.187    0.977    1.637    1.053    0.501
+  DEU                   21,869  111.659    4.723    1.350    1.556    1.056    0.467
+  FRA                   21,872   47.530    4.425    1.303    1.594    1.072    0.478
+  GBR                   21,600   92.131    4.106    1.110    1.642    1.097    0.505
+  IND                   20,222  104.179    4.312    1.316    1.709    1.097    0.545
+  ITA                   20,632  103.626    3.972    1.016    1.594    1.088    0.486
+  JPN                   20,208    7.259    4.230    1.341    1.586    1.067    0.485
+  MEX                   18,823   91.505    3.907    1.243    1.768    1.088    0.520
+  NWU                   24,585    4.183    4.000    0.522    1.514    1.002    0.442
+  OCE                   21,983  132.581    3.648    0.569    1.771    1.107    0.536
+  OTHER                  5,332  616.592    3.773    1.147    2.368    1.278    0.660
+  RUS                   18,656  203.182    4.320    1.349    1.717    1.126    0.530
+  SAM                   23,529   14.347    3.710    0.492    1.618    1.072    0.515
+  SEU                   23,829    4.250    3.954    0.513    1.509    1.031    0.456
+  USA                   22,475  174.646    4.033    1.268    1.544    1.045    0.472
+  World                439,913   82.430    3.961    0.841    1.652    1.075    0.504
+
+WITHIN IMPORTER-PRODUCT HETEROGENEITY (cf. Soderbery p. 52)
+------------------------------------------------------------------------
+  Importer-product pairs with 2+ exporters: 25,030
+
+  Median gamma within pair:  0.959  [Q25=0.630, Q75=1.539]
+  SD of gamma within pair:   0.392  [Q25=0.147, Q75=1.012]
+  MAD of gamma within pair:  0.046  [Q25=0.012, Q75=0.138]
+
+  Interpretation: For the median importer-product, exporters have
+  a median inverse supply elasticity of 0.959 with within-pair
+  SD of 0.392. Soderbery reports: median=0.712, SD=0.625, MAD=0.125.
+
+VARIANCE DECOMPOSITION OF GAMMA (cf. Soderbery p. 52)
+------------------------------------------------------------------------
+  R-squared (importer x product FEs on log gamma): 0.596
+  Observations: 439,913  Groups: 25,030
+
+  Interpretation: 60% of variation in log(gamma) is explained by
+  importer-product fixed effects. The remaining 40% comes from
+  exporter heterogeneity within importer-product pairs.
+  Soderbery reports 72% explained by importer-product FEs.
+
+========================================================================
+  END OF REPORT
+========================================================================
