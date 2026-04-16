@@ -4,8 +4,8 @@ Replication code and documentation for heterogeneous trade elasticity estimates.
 Data outputs are hosted on Hugging Face due to file size.
 
 **Projects:**
-- [trade_elast_baci_hs92_v202601_hs4](#trade_elast_baci_hs92_v202601_hs4) — BACI HS92 v202601 elasticities, HS4, fixed σ
-- [soderbery_2018_extension](#soderbery_2018_extension) — Soderbery (2018) two-step extension, HS4
+- [trade_elast_baci_hs92_v202601_hs4](#trade_elast_baci_hs92_v202601_hs4) — Feenstra (1994) σ estimates with fixed-sigma γ, BACI HS92 v202601, HS4
+- [soderbery_2018_extension](#soderbery_2018_extension) — Three-stage heterogeneous σ and γ estimator extending Soderbery (2018) to country level, BACI HS92 v202601, HS4
 
 ---
 
